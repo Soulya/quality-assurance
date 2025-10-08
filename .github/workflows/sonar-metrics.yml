@@ -1,0 +1,42 @@
+name: Sonar → Release Notes
+
+on:
+  release:
+    types: [published, edited]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (optional for manual run)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  inject-sonar-metrics:
+    runs-on: ubuntu-latest
+    steps:
+      # Optional: Tag setzen, wenn manuell gestartet
+      - name: Set tag from input (manual run)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.tag != '' }}
+        run: echo "GITHUB_TAG=${{ inputs.tag }}" >> $GITHUB_ENV
+
+      # Nutzt die Action DIREKT aus system42ng/reporting
+      - name: Inject Sonar metrics
+        uses: Soulya/reporting/sonar-to-release@sonar-to-release-v1   # oder Commit-SHA
+        with:
+          sonar-base: https://devstack.vwgroup.com/sonar
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+
+          # Variante A: explizite Keys
+          project-keys: "AS42NG:PORTAL42:iam-frontend,AS42NG:PORTAL42:iam-backend"
+          discover: "false"
+
+          # Variante B (stattdessen):
+          # project-keys: ${{ vars.SONAR_PROJECT_KEYS }}
+          # discover: "false"
+
+          # Optional:
+          # metric-keys: "ncloc,coverage,bugs,vulnerabilities,code_smells,security_hotspots,duplicated_lines_density,alert_status"
+          # section-title: "Quality Metrics (SonarQube)"

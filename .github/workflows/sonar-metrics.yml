@@ -24,7 +24,7 @@ jobs:
 
       # Nutzt die Action DIREKT aus system42ng/reporting
       - name: Inject Sonar metrics
-        uses: Soulya/reporting/sonar-to-release@sonar-to-release-v1   # oder Commit-SHA
+        uses: Soulya/reporting/sonar-to-release@main   # oder Commit-SHA
         with:
           sonar-base: https://devstack.vwgroup.com/sonar
           sonar-token: ${{ secrets.SONAR_TOKEN }}
